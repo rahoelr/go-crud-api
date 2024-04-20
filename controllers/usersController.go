@@ -105,3 +105,11 @@ func Login(c *gin.Context) {
 		"token": tokenString,
 	})
 }
+
+func Validate(c *gin.Context) {
+	user, _ := c.Get("user")
+	c.JSON(200, gin.H{
+		"message": "i'm logged",
+		"user":    user,
+	})
+}
