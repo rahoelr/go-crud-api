@@ -18,5 +18,9 @@ func main() {
 	r.PUT("/post/:id", controllers.PostUpdate)
 	r.DELETE("/post/:id", controllers.PostDelete)
 
+	//api users
+	r.POST("/signup", controllers.Signup)
+	r.POST("/login", controllers.Login)
+
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
