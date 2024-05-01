@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-crud/controllers"
 	"go-crud/initializers"
-	"go-crud/middleware"
 )
 
 func init() {
@@ -22,7 +21,8 @@ func main() {
 	//api users
 	r.POST("/signup", controllers.Signup)
 	r.POST("/login", controllers.Login)
-	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
+	r.POST("/logout", controllers.Logout)
+	r.GET("/validate", controllers.Validate)
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 }

@@ -3,7 +3,9 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"go-crud/initializers"
+	"go-crud/middleware"
 	"go-crud/models"
+	"net/http"
 )
 
 func PostCreate(c *gin.Context) {
@@ -15,6 +17,14 @@ func PostCreate(c *gin.Context) {
 	}
 
 	c.Bind(&body)
+
+	err := middleware.RequireAuth(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User belum login",
+		})
+		return
+	}
 
 	// Create a post
 	post := models.Post{Title: body.Title, Body: body.Body}
@@ -32,6 +42,15 @@ func PostCreate(c *gin.Context) {
 }
 
 func PostIndex(c *gin.Context) {
+	// Gunakan middleware RequireAuth
+	err := middleware.RequireAuth(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User belum login",
+		})
+		return
+	}
+
 	var posts []models.Post
 	initializers.DB.Find(&posts)
 
@@ -41,6 +60,14 @@ func PostIndex(c *gin.Context) {
 }
 
 func PostShow(c *gin.Context) {
+
+	err := middleware.RequireAuth(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User belum login",
+		})
+		return
+	}
 
 	id := c.Param("id")
 	var post models.Post
@@ -52,6 +79,14 @@ func PostShow(c *gin.Context) {
 }
 
 func PostUpdate(c *gin.Context) {
+
+	err := middleware.RequireAuth(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User belum login",
+		})
+		return
+	}
 
 	id := c.Param("id")
 
@@ -78,6 +113,14 @@ func PostUpdate(c *gin.Context) {
 func PostDelete(c *gin.Context) {
 	// get the id
 	id := c.Param("id")
+
+	err := middleware.RequireAuth(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User belum login",
+		})
+		return
+	}
 
 	// delete posts
 	initializers.DB.Delete(&models.Post{}, id)

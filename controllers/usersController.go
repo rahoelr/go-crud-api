@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"go-crud/initializers"
+	"go-crud/middleware"
 	"go-crud/models"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -106,10 +107,36 @@ func Login(c *gin.Context) {
 	})
 }
 
+func Logout(c *gin.Context) {
+	c.SetCookie("Authorization", "", -1, "", "", false, true)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User has been logged out",
+	})
+}
+
 func Validate(c *gin.Context) {
-	user, _ := c.Get("user")
-	c.JSON(200, gin.H{
-		"message": "i'm logged",
+	// Coba memeriksa otorisasi pengguna
+	err := middleware.RequireAuth(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": err.Error(), // Mengembalikan pesan kesalahan dari middleware
+		})
+		return
+	}
+
+	// Jika berhasil, ambil informasi pengguna dari konteks
+	user, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to get user information",
+		})
+		return
+	}
+
+	// Memberikan respons dengan informasi pengguna
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User is logged in",
 		"user":    user,
 	})
 }
